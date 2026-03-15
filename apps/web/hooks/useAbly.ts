@@ -26,7 +26,7 @@ export function useAbly() {
           const tokenRequest = await getToken.mutateAsync();
           callback(null, tokenRequest as Ably.TokenRequest);
         } catch (err) {
-          callback(err as Error, null);
+          callback(String(err), null);
         }
       },
     });

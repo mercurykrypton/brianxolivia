@@ -80,7 +80,7 @@ export const creatorRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const { cursor, limit, query, tags, sortBy } = input;
 
-      const where: Parameters<typeof ctx.prisma.creatorProfile.findMany>[0]["where"] = {
+      const where: NonNullable<Parameters<typeof ctx.prisma.creatorProfile.findMany>[0]>["where"] = {
         isActive: true,
         ...(query && {
           OR: [
@@ -94,7 +94,7 @@ export const creatorRouter = createTRPCRouter({
         }),
       };
 
-      const orderBy: Parameters<typeof ctx.prisma.creatorProfile.findMany>[0]["orderBy"] =
+      const orderBy: NonNullable<Parameters<typeof ctx.prisma.creatorProfile.findMany>[0]>["orderBy"] =
         sortBy === "new"
           ? { createdAt: "desc" }
           : sortBy === "trending"

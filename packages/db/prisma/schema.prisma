@@ -151,6 +151,10 @@ model CreatorProfile {
   postCount       Int      @default(0)
   totalEarnings   Float    @default(0)
 
+  // Paid DMs
+  dmPrice         Float?   // Price per DM in cents (null = free)
+  dmEnabled       Boolean  @default(false)
+
   // Social links
   websiteUrl      String?
   twitterHandle   String?

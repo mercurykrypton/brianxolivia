@@ -184,7 +184,7 @@ export const paymentsRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const where: Parameters<typeof ctx.prisma.transaction.findMany>[0]["where"] = {
+      const where: NonNullable<Parameters<typeof ctx.prisma.transaction.findMany>[0]>["where"] = {
         OR: [
           { userId: ctx.user.id },
           ...(ctx.user.creatorProfile

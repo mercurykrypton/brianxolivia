@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Andrew's Calendar — 2026</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f4f9;color:#202124}
+.layout{display:flex;min-height:100vh}
+
+/* ── SIDEBAR ── */
+.sidebar{width:224px;flex-shrink:0;background:#fff;border-right:1px solid #e0e0e0;height:100vh;position:sticky;top:0;overflow-y:auto;display:flex;flex-direction:column}
+.sb-head{display:flex;justify-content:space-between;align-items:center;padding:14px 12px 10px;border-bottom:1px solid #eee}
+.sb-title{font-size:13px;font-weight:600;color:#3c4043}
+.sb-acts{display:flex;gap:5px}
+.sb-acts button{background:none;border:1px solid #dadce0;border-radius:10px;padding:2px 8px;font-size:11px;color:#5f6368;cursor:pointer;font-family:inherit}
+.sb-acts button:hover{background:#f1f3f4}
+.cal-list{padding:4px 0 16px}
+.cat-head{font-size:10px;font-weight:700;color:#9aa0a6;text-transform:uppercase;letter-spacing:.8px;padding:10px 12px 3px}
+.cal-item{display:flex;align-items:center;gap:7px;padding:5px 12px;cursor:pointer}
+.cal-item:hover{background:#f8f9fa}
+.cal-item input{width:14px;height:14px;cursor:pointer;flex-shrink:0}
+.cal-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.cal-name{font-size:12px;color:#3c4043;line-height:1.35;user-select:none}
+.cal-item.dim .cal-name{color:#aaa}
+
+/* ── MAIN ── */
+.main{flex:1;min-width:0;padding:20px 24px;overflow:hidden}
+h1{font-size:22px;font-weight:400;color:#3c4043;margin-bottom:2px}
+.subtitle{color:#70757a;font-size:13px;margin-bottom:16px}
+.tabs{display:flex;gap:8px;margin-bottom:20px}
+.tab{padding:7px 20px;border-radius:20px;border:1px solid #dadce0;background:#fff;color:#3c4043;font-size:13px;font-family:inherit;cursor:pointer;transition:all .15s}
+.tab:hover{background:#f0f4f9;border-color:#bdc1c6}
+.tab.active{background:#1a73e8;color:#fff;border-color:#1a73e8;font-weight:500}
+.view-pane{display:none}
+.view-pane.active{display:block}
+
+/* ── WEEK VIEW ── */
+.week-wrap{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.12),0 0 0 1px rgba(0,0,0,.05);margin-bottom:20px;overflow:hidden}
+.week-label{font-size:11px;color:#70757a;font-weight:600;text-transform:uppercase;letter-spacing:.8px;padding:10px 16px;background:#f8f9fa;border-bottom:1px solid #e8eaed}
+.col-header{display:grid;grid-template-columns:52px repeat(7,1fr);border-bottom:1px solid #e8eaed}
+.hdr-spacer{}
+.hdr-day{text-align:center;padding:10px 4px 8px;border-left:1px solid #f0f0f0}
+.hdr-day .dname{font-size:11px;color:#70757a;text-transform:uppercase;letter-spacing:.5px;font-weight:500}
+.hdr-day .dnum{font-size:24px;font-weight:300;color:#3c4043;line-height:1.2}
+.hdr-day.today .dnum{background:#1a73e8;color:#fff;border-radius:50%;width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;font-size:20px;font-weight:500}
+.hdr-day.weekend .dname,.hdr-day.weekend .dnum{color:#bbb}
+.allday-section{display:grid;grid-template-columns:52px repeat(7,1fr);border-bottom:2px solid #e8eaed;min-height:26px}
+.allday-lbl{font-size:9px;color:#9aa0a6;display:flex;align-items:flex-start;justify-content:flex-end;padding:5px 6px;text-transform:uppercase;letter-spacing:.5px}
+.allday-col{border-left:1px solid #f0f0f0;padding:2px 1px}
+.aev{border-radius:3px;padding:2px 5px;font-size:10px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px;display:block;line-height:1.5}
+.time-grid{display:grid;grid-template-columns:52px repeat(7,1fr);position:relative}
+.time-lbl{height:56px;display:flex;align-items:flex-start;justify-content:flex-end;padding:0 6px}
+.time-lbl span{font-size:10px;color:#9aa0a6;position:relative;top:-7px;white-space:nowrap}
+.day-col{border-left:1px solid #f0f0f0;position:relative}
+.hour-line{position:absolute;left:0;right:0;border-top:1px solid #f1f3f4;z-index:0}
+.half-line{position:absolute;left:0;right:0;border-top:1px dotted #f7f8f9;z-index:0}
+.ev{position:absolute;border-radius:4px;padding:3px 5px;overflow:hidden;z-index:1;cursor:default;transition:box-shadow .15s}
+.ev:hover{box-shadow:0 2px 8px rgba(0,0,0,.2);z-index:10}
+.ev .ev-time{font-size:10px;display:block;line-height:1.3;opacity:.85}
+.ev .ev-title{font-size:11px;font-weight:500;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.4}
+.day-col.today-col{background:rgba(26,115,232,.02)}
+
+/* ── MONTH VIEW ── */
+.months-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.months-6{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.m-wrap{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.12),0 0 0 1px rgba(0,0,0,.05);overflow:hidden}
+.m-header{font-size:16px;font-weight:500;color:#3c4043;padding:14px 16px 8px}
+.m-daynames{display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px solid #e8eaed}
+.m-dn{text-align:center;padding:5px 2px;font-size:11px;font-weight:600;color:#70757a;text-transform:uppercase;letter-spacing:.4px}
+.m-dn.m-dn-we{color:#c8c8c8}
+.m-grid{display:grid;grid-template-columns:repeat(7,1fr)}
+.m-cell{min-height:90px;border-right:1px solid #f0f0f0;border-bottom:1px solid #f0f0f0;padding:4px 3px;overflow:hidden}
+.m-cell.m-adj{opacity:.28}
+.m-cell.m-we{background:#fafafa}
+.m-cell.m-today{background:rgba(26,115,232,.04)}
+.m-num{font-size:13px;color:#3c4043;width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:50%;margin-bottom:2px;font-weight:400;flex-shrink:0}
+.m-num.m-num-today{background:#1a73e8;color:#fff;font-weight:500}
+.m-ev{border-radius:3px;padding:1px 5px;font-size:10px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px;line-height:1.6;display:block;cursor:default}
+.m-more{font-size:10px;color:#70757a;padding:0 3px;line-height:1.5}
+.months-6 .m-cell{min-height:65px}
+.months-6 .m-ev{font-size:9px;padding:1px 4px;line-height:1.5}
+.months-6 .m-num{font-size:11px;width:22px;height:22px}
+.months-6 .m-header{font-size:14px;padding:10px 12px 6px}
+.months-6 .m-dn{font-size:10px;padding:4px 2px}
+.months-6 .m-more{font-size:9px}
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="sb-head">
+      <span class="sb-title">Calendars</span>
+      <div class="sb-acts">
+        <button id="btn-all">All</button>
+        <button id="btn-none">None</button>
+      </div>
+    </div>
+    <div class="cal-list" id="cal-list"></div>
+  </aside>
+
+  <div class="main">
+    <h1>Andrew's Calendar</h1>
+    <div class="subtitle">2026 &nbsp;&middot;&nbsp; America/Vancouver</div>
+    <div class="tabs">
+      <button class="tab active" data-pane="pane-2week">2 Weeks</button>
+      <button class="tab" data-pane="pane-3month">3 Months</button>
+      <button class="tab" data-pane="pane-6month">6 Months</button>
+    </div>
+    <div id="pane-2week" class="view-pane active">
+      <div id="week1-panel"></div>
+      <div id="week2-panel"></div>
+      <div id="week3-panel"></div>
+    </div>
+    <div id="pane-3month" class="view-pane">
+      <div class="months-3" id="grid-3month"></div>
+    </div>
+    <div id="pane-6month" class="view-pane">
+      <div class="months-6" id="grid-6month"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── CALENDAR CONFIG ───────────────────────────────────────────────
+const CALS = {
+  'primary':    {name:'Andrew (Personal)',  hex:'#d32f2f', cat:'Personal', on:true},
+  'private':    {name:'Private',            hex:'#455a64', cat:'Personal', on:true},
+  'spiritual':  {name:'ABM Spiritual',      hex:'#5e35b1', cat:'Personal', on:true},
+  'travel':     {name:'Travel',             hex:'#e65100', cat:'Personal', on:true},
+  'mariane':    {name:'Mariane',            hex:'#1565c0', cat:'Personal', on:true},
+  'meetings':   {name:'Meetings / Conf.',   hex:'#f57c00', cat:'Work',     on:true},
+  'vgh-or':     {name:'VGH OR Schedule',    hex:'#546e7a', cat:'Work',     on:false},
+  'shawna':     {name:'Shawna',            hex:'#7b1fa2', cat:'Family',   on:true},
+  'hannah-p':   {name:'Hannah (Personal)', hex:'#c2185b', cat:'Family',   on:true},
+  'hannah-s':   {name:'Hannah (School)',   hex:'#1976d2', cat:'Family',   on:true},
+  'hannah-m':   {name:'Hannah (Medical)',  hex:'#00838f', cat:'Family',   on:true},
+  'noah':       {name:'Noah',              hex:'#00897b', cat:'Family',   on:true},
+  'merkur':     {name:'Merkur Family',     hex:'#558b2f', cat:'Family',   on:true},
+  'household':  {name:'Household/School',  hex:'#0277bd', cat:'Family',   on:true},
+  'three-story':{name:'Three Story Clinic',hex:'#ad1457', cat:'Family',   on:true},
+  'birthdays':  {name:'Birthdays',         hex:'#2e7d32', cat:'Other',    on:true},
+  'canucks':    {name:'Canucks',           hex:'#005c3c', cat:'Other',    on:true},
+  'holidays-ca':{name:'Holidays (Canada)', hex:'#78909c', cat:'Other',    on:true},
+  'jewish':     {name:'Jewish Holidays',   hex:'#6d4c41', cat:'Other',    on:true},
+  'headless':   {name:'Headless Way',      hex:'#3949ab', cat:'Personal', on:false},
+};
+
+const TODAY   = '2026-03-10';
+const HOUR_H  = 56;
+const START_H = 6;
+const END_H   = 23;
+
+// ─── COLOR HELPERS ─────────────────────────────────────────────────
+function ph(h){return[1,3,5].map(i=>parseInt(h.slice(i,i+2),16))}
+function lightBg(hex){const[r,g,b]=ph(hex);return`rgb(${Math.round(r*.13+255*.87)},${Math.round(g*.13+255*.87)},${Math.round(b*.13+255*.87)})`}
+function darkTxt(hex){const[r,g,b]=ph(hex);return`rgb(${Math.round(r*.5)},${Math.round(g*.5)},${Math.round(b*.5)})`}
+function calH(id){return(CALS[id]||CALS.primary).hex}
+function pillStyle(id){const h=calH(id);return`background:${lightBg(h)};color:${darkTxt(h)}`}
+function chipStyle(id){const h=calH(id);return`background:${h};color:#fff`}
+function evStyle(id){const h=calH(id);return`background:${lightBg(h)};color:${darkTxt(h)};border-left:3px solid ${h}`}
+
+// ─── ALL-DAY EVENTS  [start, end_inclusive, title, calId] ──────────
+const ALL_EVENTS = [
+// MARCH
+['2026-03-09','2026-03-09','Commonwealth Day','holidays-ca'],
+['2026-03-09','2026-03-10','Hannah: Model UN (Montréal)','hannah-s'],
+['2026-03-09','2026-03-09','🏒 Senators @ Canucks','canucks'],
+['2026-03-11','2026-03-14','⭐ Shawna Away','travel'],
+['2026-03-12','2026-03-12','🏒 Predators @ Canucks','canucks'],
+['2026-03-12','2026-03-12','🎂 Hannah Birthday (17)','birthdays'],
+['2026-03-13','2026-03-15','🎿 Whistler Weekend','primary'],
+['2026-03-13','2026-03-13',"Hannah Driver's Test",'hannah-p'],
+['2026-03-14','2026-03-14','🏒 Kraken @ Canucks','canucks'],
+['2026-03-15','2026-03-15','💰 Payroll','private'],
+['2026-03-15','2026-03-15','🎂 Ty Leipsic Birthday','birthdays'],
+['2026-03-16','2026-03-20','🩺 Snowmass Eye Conf.','meetings'],
+['2026-03-17','2026-03-17',"☘️ St. Patrick's Day",'holidays-ca'],
+['2026-03-17','2026-03-17','🏒 Panthers @ Canucks','canucks'],
+['2026-03-18','2026-03-19','Field Trip: Moot Beit Din NY','household'],
+['2026-03-18','2026-03-18','🎵 Jota Pê @ The Pearl','private'],
+['2026-03-19','2026-03-19','🏒 Lightning @ Canucks','canucks'],
+['2026-03-19','2026-03-19','🎂 Randy Frisch Birthday','birthdays'],
+['2026-03-20','2026-03-23','Rafael with Mariane','mariane'],
+['2026-03-20','2026-03-22','Hannah: Dad','hannah-p'],
+['2026-03-21','2026-03-22','ASRS Retina 2026','meetings'],
+['2026-03-21','2026-03-21','🏒 Blues @ Canucks','canucks'],
+['2026-03-21','2026-03-21',"Simone's 50th",'primary'],
+['2026-03-21','2026-03-21','🎂 Daniel Merkur Birthday','birthdays'],
+['2026-03-21','2026-03-21','🎂 Kim Merkur Birthday','birthdays'],
+['2026-03-24','2026-03-29','Mom (Hannah custody)','hannah-p'],
+['2026-03-24','2026-03-24','🎂 Ryan Merkur Birthday','birthdays'],
+['2026-03-25','2026-03-25','🎂 Simone Krell Birthday','birthdays'],
+['2026-03-25','2026-03-25','💕 Anniversary - Paul & Bayla','birthdays'],
+['2026-03-27','2026-04-12','✈️ Passover Travel','travel'],
+['2026-03-27','2026-03-27','🎂 Sue Hector Birthday','birthdays'],
+// APRIL
+['2026-04-02','2026-04-09','🕍 Passover (Pesach)','jewish'],
+['2026-04-03','2026-04-03','Good Friday','holidays-ca'],
+['2026-04-03','2026-04-06','Rafael with Mariane','mariane'],
+['2026-04-03','2026-04-03','🎂 Rafael & Maddison Birthday','birthdays'],
+['2026-04-04','2026-04-11','Shawna Away with Kids','shawna'],
+['2026-04-05','2026-04-05','Easter Sunday','holidays-ca'],
+['2026-04-05','2026-04-05','🎂 Dr. Umedaly Birthday','birthdays'],
+['2026-04-06','2026-04-06','Easter Monday','holidays-ca'],
+['2026-04-07','2026-04-07','🎂 Merkur Mom Birthday','birthdays'],
+['2026-04-09','2026-04-11','Vit-Buckle (Las Vegas)','meetings'],
+['2026-04-10','2026-04-13','ASCRS 2026 (DC)','meetings'],
+['2026-04-10','2026-04-12','Mom (Hannah custody)','hannah-p'],
+['2026-04-13','2026-04-13','School Resumes','household'],
+['2026-04-14','2026-04-14','Yom HaShoah','jewish'],
+['2026-04-15','2026-04-16','⚠️ Dancing with the Stars — Hannah & Shawna','hannah-p'],
+['2026-04-17','2026-04-19','Dad (Hannah custody)','hannah-p'],
+['2026-04-17','2026-04-17','🎂 Merkur Dad Birthday','birthdays'],
+['2026-04-17','2026-04-20','Rafael with Mariane','mariane'],
+['2026-04-21','2026-04-21','Yom Hazikaron','jewish'],
+['2026-04-22','2026-04-22',"Yom Ha'atzmaut",'jewish'],
+['2026-04-22','2026-04-22','Noah Finished School','noah'],
+['2026-04-24','2026-04-26','Mom (Hannah custody)','hannah-p'],
+['2026-04-24','2026-04-25','Third Coast Retina','meetings'],
+['2026-04-26','2026-04-26','🎂 Shauna Kerzner Birthday','birthdays'],
+['2026-04-27','2026-04-27','No School: Pro D Day','household'],
+['2026-04-28','2026-04-28','🎂 Jenny Frisch Birthday','birthdays'],
+// MAY
+['2026-05-01','2026-05-04','Dad (Hannah custody)','hannah-p'],
+['2026-05-01','2026-05-04','Rafael with Mariane','mariane'],
+['2026-05-02','2026-05-02','🎂 Colby Graff Birthday','birthdays'],
+['2026-05-03','2026-05-07','ARVO 2026 (Denver)','meetings'],
+['2026-05-04','2026-05-04','🎂 Lian Birthday','birthdays'],
+['2026-05-08','2026-05-08','🎂 Adam Dean Birthday','birthdays'],
+['2026-05-08','2026-05-11','Mom (Hannah custody)','hannah-p'],
+['2026-05-12','2026-05-12','🎂 Alex Kopperson Birthday','birthdays'],
+['2026-05-13','2026-05-13','🎂 Allan Beron Birthday','birthdays'],
+['2026-05-14','2026-05-17','Retina World Congress','meetings'],
+['2026-05-14','2026-05-16','Pacific Retina / IRIS','meetings'],
+['2026-05-14','2026-05-14','🎂 Shawna Birthday 🎂','birthdays'],
+['2026-05-15','2026-05-15','💰 Payroll','private'],
+['2026-05-15','2026-05-18','Rafael with Mariane','mariane'],
+['2026-05-15','2026-05-17','✈️ Shawna & Hannah Travel','travel'],
+['2026-05-15','2026-05-15','💕 Kim & David Merkur Anniversary','birthdays'],
+['2026-05-18','2026-05-18','Victoria Day','holidays-ca'],
+['2026-05-20','2026-05-20','💕 Shawna & Andrew Anniversary','birthdays'],
+['2026-05-21','2026-05-21','🎂 Taylor Merkur Birthday','birthdays'],
+['2026-05-22','2026-05-23','Shavuot','jewish'],
+['2026-05-22','2026-06-03','Noah: Israel Trip','noah'],
+['2026-05-22','2026-05-25','Mom (Hannah custody)','hannah-p'],
+['2026-05-25','2026-05-25','🎂 Rob Chernish Birthday','birthdays'],
+['2026-05-27','2026-05-30','Club Jules Gonin (Lugano)','meetings'],
+['2026-05-28','2026-05-30','Kiawah Eye','meetings'],
+['2026-05-29','2026-06-01','Dad (Hannah custody)','hannah-p'],
+['2026-05-29','2026-06-01','Rafael with Mariane','mariane'],
+// JUNE
+['2026-06-02','2026-06-02','🎂 Jack Tritt Birthday','birthdays'],
+['2026-06-03','2026-07-23','Noah: Onward Israel','noah'],
+['2026-06-05','2026-06-08','Mom (Hannah custody)','hannah-p'],
+['2026-06-06','2026-06-06','🎂 Jesse Merkur Birthday','birthdays'],
+['2026-06-11','2026-06-11','💕 Jenny & Randy Frisch Anniversary','birthdays'],
+['2026-06-12','2026-06-15','Dad (Hannah custody)','hannah-p'],
+['2026-06-12','2026-06-15','Rafael with Mariane','mariane'],
+['2026-06-12','2026-06-23','Hannah Exams','hannah-s'],
+['2026-06-12','2026-06-12','🎂 Chris Kape Birthday','birthdays'],
+['2026-06-15','2026-06-15','💰 Payroll','private'],
+['2026-06-17','2026-06-17','🎂 Jeff Appleby Birthday','birthdays'],
+['2026-06-18','2026-06-18','🎂 Lisa Bhamra Birthday','birthdays'],
+['2026-06-19','2026-06-22','Mom (Hannah custody)','hannah-p'],
+['2026-06-22','2026-06-22','🎂 Isabella Leipsic Birthday','birthdays'],
+['2026-06-22','2026-06-22','🎂 Ethan Frisch Birthday','birthdays'],
+['2026-06-24','2026-06-25','Dad (Hannah custody)','hannah-p'],
+['2026-06-26','2026-07-05','🇮🇱 Israel','travel'],
+['2026-06-26','2026-06-29','Rafael with Mariane','mariane'],
+['2026-06-26','2026-07-21','Maccabiah Games — Hannah','hannah-p'],
+['2026-06-26','2026-06-29','WOC 2026 (Prague)','meetings'],
+['2026-06-28','2026-06-28','🎂 Elisa Belzberg Birthday','birthdays'],
+['2026-06-30','2026-07-17','Shawna in Israel','shawna'],
+// JULY
+['2026-07-01','2026-07-01','Canada Day 🍁','holidays-ca'],
+['2026-07-05','2026-07-05','🎂 Simon Fisch Birthday','birthdays'],
+['2026-07-09','2026-07-09','🎂 Jory Simkin Birthday','birthdays'],
+['2026-07-10','2026-07-13','Rafael with Mariane','mariane'],
+['2026-07-11','2026-07-11','🎂 David Merkur Birthday','birthdays'],
+['2026-07-14','2026-07-18','ASRS 2026 (Montréal)','meetings'],
+['2026-07-15','2026-07-15','💰 Payroll','private'],
+['2026-07-20','2026-07-20','🎂 Jason Kirsch Birthday','birthdays'],
+['2026-07-20','2026-07-20','🎂 Khoi Tran Birthday','birthdays'],
+['2026-07-24','2026-07-26','Dad (Hannah custody)','hannah-p'],
+['2026-07-24','2026-07-27','Rafael with Mariane','mariane'],
+['2026-07-24','2026-07-24','🎂 Bentley Merkur Birthday','birthdays'],
+['2026-07-28','2026-07-28','🎂 Tova Dombrowski Birthday','birthdays'],
+['2026-07-29','2026-07-29','🎂 Howie Kallner Birthday','birthdays'],
+['2026-07-30','2026-08-14','🇧🇷 Brazil','travel'],
+['2026-07-31','2026-08-03','Mom (Hannah custody)','hannah-p'],
+// AUGUST
+['2026-08-03','2026-08-03','BC Day','holidays-ca'],
+['2026-08-05','2026-08-05','🎂 Moti Kotik Birthday','birthdays'],
+['2026-08-05','2026-08-05','💕 Leipsic Anniversary','birthdays'],
+['2026-08-06','2026-08-06','🎂 Judd Beron Birthday','birthdays'],
+['2026-08-07','2026-08-10','Dad (Hannah custody)','hannah-p'],
+['2026-08-07','2026-08-10','Rafael with Mariane','mariane'],
+['2026-08-08','2026-08-08','🎂 Hassan Aziz Birthday','birthdays'],
+['2026-08-10','2026-08-14','Shawna/Hannah Away','shawna'],
+['2026-08-10','2026-08-10','🎂 Jamie Chelin Birthday','birthdays'],
+['2026-08-14','2026-08-17','Mom (Hannah custody)','hannah-p'],
+['2026-08-15','2026-08-15','💰 Payroll','private'],
+['2026-08-19','2026-08-19','🕯️ Father Passing (Edwin Merkur)','birthdays'],
+['2026-08-21','2026-08-23','Dad (Hannah custody)','hannah-p'],
+['2026-08-21','2026-08-24','Rafael with Mariane','mariane'],
+['2026-08-24','2026-08-28','Shawna/Hannah Away','shawna'],
+['2026-08-25','2026-08-25','🎂 Larry Track Birthday','birthdays'],
+['2026-08-28','2026-08-31','Mom (Hannah custody)','hannah-p'],
+['2026-08-29','2026-08-29','💕 Ryan & Lian Anniversary','birthdays'],
+];
+
+// Generate Hannah Training: Tue 5:30pm + Thu 4:30pm, Mar 24 – Aug 31
+(function(){
+  const d=new Date(2026,2,24),end=new Date(2026,7,31);
+  while(d<=end){
+    const dow=d.getDay(),ds=d.toISOString().slice(0,10);
+    if(dow===2||dow===4) ALL_EVENTS.push([ds,ds,'Hannah Training','hannah-p']);
+    d.setDate(d.getDate()+1);
+  }
+})();
+
+// Generate ABM Spiritual meetings: Mon 7pm, Fri 6am, Sat 9am, Sun 9am + John Astin 10am
+(function(){
+  const d=new Date(2026,2,9),end=new Date(2026,7,31);
+  while(d<=end){
+    const dow=d.getDay(),ds=d.toISOString().slice(0,10);
+    if(dow===1) ALL_EVENTS.push([ds,ds,'Headless Way \uD83E\uDEF5 (Mon 7pm)','spiritual']);
+    if(dow===5) ALL_EVENTS.push([ds,ds,'Headless Way \uD83E\uDEF5 (Fri 6am)','spiritual']);
+    if(dow===6) ALL_EVENTS.push([ds,ds,'Headless Way \uD83E\uDEF5 (Sat 9am)','spiritual']);
+    if(dow===0) ALL_EVENTS.push([ds,ds,'Headless Way \uD83E\uDEF5 (Sun 9am)','spiritual']);
+    if(dow===0) ALL_EVENTS.push([ds,ds,'John Astin Zoom (10am)','spiritual']);
+    d.setDate(d.getDate()+1);
+  }
+})();
+
+// Generate Headless Way public (hidden by default)
+(function(){
+  const d=new Date(2026,2,9),end=new Date(2026,7,31);
+  while(d<=end){
+    const dow=d.getDay(),ds=d.toISOString().slice(0,10);
+    if(dow!==6&&dow!==0) ALL_EVENTS.push([ds,ds,'\uD83E\uDEF5 Headless Zoom','headless']);
+    else ALL_EVENTS.push([ds,ds,'\uD83E\uDEF5 Headless Zoom','headless']);
+    d.setDate(d.getDate()+1);
+  }
+})();
+
+// ─── WEEK VIEW DATA ────────────────────────────────────────────────
+// {calId, h, m, dur (mins), title}
+const WEEK_CFGS = [
+{id:'week1-panel',label:'Week 1 \u00B7 March 9\u201315',
+ dates:['2026-03-09','2026-03-10','2026-03-11','2026-03-12','2026-03-13','2026-03-14','2026-03-15'],
+ names:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],nums:[9,10,11,12,13,14,15],we:[0,0,0,0,0,1,1],
+ ev:[
+  [{calId:'primary',h:6,m:0,dur:90,title:'B90 Yoga (26&2)'},{calId:'primary',h:16,m:35,dur:60,title:'Blood Donation \u2014 4750 Oak St'},{calId:'primary',h:17,m:30,dur:60,title:'VA Ophthalmology Staff Mtg'},{calId:'canucks',h:19,m:0,dur:180,title:'\uD83C\uDFD2 Senators @ Canucks'}],
+  [{calId:'primary',h:10,m:0,dur:60,title:'HVAC Inspection \u2014 SOTO'},{calId:'hannah-p',h:17,m:30,dur:60,title:'Hannah Training'},{calId:'primary',h:19,m:30,dur:60,title:'Hannah Driving Lesson'}],
+  [{calId:'primary',h:7,m:0,dur:60,title:'Retina Curriculum (Teams)'},{calId:'three-story',h:17,m:0,dur:50,title:'Hannah Therapy \u2014 Abbey Hicks'},{calId:'spiritual',h:19,m:0,dur:60,title:'Headless Way \uD83E\uDEF5 7pm'}],
+  [{calId:'hannah-p',h:16,m:30,dur:60,title:'Hannah Training'},{calId:'primary',h:18,m:0,dur:90,title:'Commando & Commandette Dinner'},{calId:'canucks',h:19,m:0,dur:180,title:'\uD83C\uDFD2 Predators @ Canucks'},{calId:'primary',h:19,m:30,dur:60,title:'Sam Harris: Truth & Consequences'},{calId:'primary',h:20,m:30,dur:120,title:'Reservation at Raisu'}],
+  [{calId:'primary',h:8,m:30,dur:30,title:'Physiotherapy \u2014 JY Physio'},{calId:'spiritual',h:6,m:0,dur:60,title:'Headless Way \uD83E\uDEF5 6am'}],
+  [{calId:'spiritual',h:9,m:0,dur:60,title:'Headless Way \uD83E\uDEF5 9am'},{calId:'canucks',h:19,m:0,dur:180,title:'\uD83C\uDFD2 Kraken @ Canucks'}],
+  [{calId:'spiritual',h:9,m:0,dur:60,title:'Headless Way \uD83E\uDEF5 9am'},{calId:'spiritual',h:10,m:0,dur:90,title:'John Astin Zoom 10am'}],
+ ]},
+{id:'week2-panel',label:'Week 2 \u00B7 March 16\u201322',
+ dates:['2026-03-16','2026-03-17','2026-03-18','2026-03-19','2026-03-20','2026-03-21','2026-03-22'],
+ names:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],nums:[16,17,18,19,20,21,22],we:[0,0,0,0,0,1,1],
+ ev:[
+  [{calId:'primary',h:12,m:0,dur:60,title:'Ophthalmic Films Checkpoint'},{calId:'spiritual',h:19,m:0,dur:60,title:'Headless Way \uD83E\uDEF5 7pm'}],
+  [{calId:'hannah-p',h:17,m:30,dur:60,title:'Hannah Training'},{calId:'canucks',h:19,m:0,dur:180,title:'\uD83C\uDFD2 Panthers @ Canucks'},{calId:'primary',h:19,m:30,dur:60,title:'Scotch and Talmud'}],
+  [{calId:'private',h:20,m:0,dur:120,title:'\uD83C\uDFB5 Jota P\u00EA @ The Pearl'}],
+  [{calId:'shawna',h:13,m:0,dur:60,title:'Dr. Schertzer (Shawna)'},{calId:'primary',h:14,m:30,dur:30,title:'Topcon ImageNet Review'},{calId:'hannah-p',h:16,m:30,dur:60,title:'Hannah Training'},{calId:'canucks',h:19,m:0,dur:180,title:'\uD83C\uDFD2 Lightning @ Canucks'}],
+  [{calId:'spiritual',h:6,m:0,dur:60,title:'Headless Way \uD83E\uDEF5 6am'}],
+  [{calId:'spiritual',h:9,m:0,dur:60,title:'Headless Way \uD83E\uDEF5 9am'},{calId:'shawna',h:12,m:0,dur:60,title:'Alisha (Shawna)'},{calId:'canucks',h:16,m:0,dur:180,title:'\uD83C\uDFD2 Blues @ Canucks'},{calId:'primary',h:19,m:0,dur:60,title:"Simone's 50th \u2014 Trafalgar St"}],
+  [{calId:'spiritual',h:9,m:0,dur:60,title:'Headless Way \uD83E\uDEF5 9am'},{calId:'spiritual',h:10,m:0,dur:90,title:'John Astin Zoom 10am'}],
+ ]},
+{id:'week3-panel',label:'Week 3 \u00B7 March 23\u201329',
+ dates:['2026-03-23','2026-03-24','2026-03-25','2026-03-26','2026-03-27','2026-03-28','2026-03-29'],
+ names:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],nums:[23,24,25,26,27,28,29],we:[0,0,0,0,0,1,1],
+ ev:[
+  [{calId:'primary',h:12,m:0,dur:60,title:'Ophthalmic Films Checkpoint'},{calId:'spiritual',h:19,m:0,dur:60,title:'Headless Way \uD83E\uDEF5 7pm'}],
+  [{calId:'hannah-p',h:17,m:30,dur:60,title:'Hannah Training'}],
+  [],
+  [{calId:'hannah-p',h:16,m:30,dur:60,title:'Hannah Training'}],
+  [{calId:'spiritual',h:6,m:0,dur:60,title:'Headless Way \uD83E\uDEF5 6am'}],
+  [{calId:'spiritual',h:9,m:0,dur:60,title:'Headless Way \uD83E\uDEF5 9am'}],
+  [{calId:'spiritual',h:9,m:0,dur:60,title:'Headless Way \uD83E\uDEF5 9am'},{calId:'spiritual',h:10,m:0,dur:90,title:'John Astin Zoom 10am'}],
+ ]},
+];
+
+// ─── CORE RENDER FUNCTIONS ─────────────────────────────────────────
+function t2y(h,m){return(h-START_H)*HOUR_H+(m/60)*HOUR_H}
+function d2h(m){return Math.max((m/60)*HOUR_H,20)}
+function fmt(h,m){const ap=h<12?'AM':'PM';const h12=h===0?12:h>12?h-12:h;return`${h12}:${String(m).padStart(2,'0')} ${ap}`}
+
+function computeLanes(evs){
+  evs=[...evs].sort((a,b)=>(a.h*60+a.m)-(b.h*60+b.m));
+  const ends=[];
+  for(const e of evs){
+    const s=e.h*60+e.m,f=s+e.dur;
+    let li=ends.findIndex(x=>x<=s);
+    if(li<0){li=ends.length;ends.push(f);}else ends[li]=f;
+    e._l=li;e._s=s;e._f=f;
+  }
+  for(const e of evs){
+    let mc=e._l+1;
+    for(const o of evs)if(o!==e&&e._s<o._f&&e._f>o._s)mc=Math.max(mc,o._l+1);
+    e._ml=mc;
+  }
+  return evs;
+}
+
+function buildTimedCol(parent,evArr,isToday,totalH){
+  const col=document.createElement('div');
+  col.className='day-col'+(isToday?' today-col':'');
+  col.style.cssText=`height:${totalH}px;position:relative`;
+  for(let h=START_H;h<END_H;h++){
+    const y=(h-START_H)*HOUR_H;
+    const hl=document.createElement('div');hl.className='hour-line';hl.style.top=y+'px';col.appendChild(hl);
+    const hf=document.createElement('div');hf.className='half-line';hf.style.top=(y+HOUR_H/2)+'px';col.appendChild(hf);
+  }
+  for(const e of computeLanes(evArr)){
+    const el=document.createElement('div');el.className='ev';
+    const lw=100/e._ml,lp=e._l*lw;
+    el.style.cssText=`top:${t2y(e.h,e.m)}px;height:${d2h(e.dur)}px;left:calc(${lp}% + 2px);width:calc(${lw}% - 4px);${evStyle(e.calId)}`;
+    const em=e.h*60+e.m+e.dur;
+    el.title=`${e.title}\n${fmt(e.h,e.m)} \u2013 ${fmt(Math.floor(em/60),em%60)}`;
+    el.innerHTML=`<span class="ev-time">${fmt(e.h,e.m)}</span><span class="ev-title">${e.title}</span>`;
+    col.appendChild(el);
+  }
+  return col;
+}
+
+function buildWeekPanel(cfg,byDate,enabled){
+  const container=document.getElementById(cfg.id);
+  container.innerHTML='';
+  const wrap=document.createElement('div');wrap.className='week-wrap';
+
+  // Label
+  const lbl=document.createElement('div');lbl.className='week-label';lbl.textContent=cfg.label;wrap.appendChild(lbl);
+
+  // Day headers
+  const colHdr=document.createElement('div');colHdr.className='col-header';
+  const sp=document.createElement('div');sp.className='hdr-spacer';colHdr.appendChild(sp);
+  cfg.dates.forEach((ds,i)=>{
+    const d=document.createElement('div');
+    d.className='hdr-day'+(cfg.we[i]?' weekend':'')+(ds===TODAY?' today':'');
+    d.innerHTML=`<div class="dname">${cfg.names[i]}</div><div class="dnum">${cfg.nums[i]}</div>`;
+    colHdr.appendChild(d);
+  });
+  wrap.appendChild(colHdr);
+
+  // All-day row
+  const adSec=document.createElement('div');adSec.className='allday-section';
+  const adLbl=document.createElement('div');adLbl.className='allday-lbl';adLbl.innerHTML='all&#8209;day';adSec.appendChild(adLbl);
+  cfg.dates.forEach(ds=>{
+    const col=document.createElement('div');col.className='allday-col';
+    const evs=(byDate[ds]||[]).filter(e=>enabled.has(e.calId));
+    evs.slice(0,4).forEach(e=>{
+      const el=document.createElement('span');el.className='aev';
+      el.style.cssText=chipStyle(e.calId);el.textContent=e.title;el.title=e.title;col.appendChild(el);
+    });
+    if(evs.length>4){const m=document.createElement('span');m.className='aev';m.style.cssText='background:#e8eaed;color:#5f6368';m.textContent=`+${evs.length-4} more`;col.appendChild(m);}
+    adSec.appendChild(col);
+  });
+  wrap.appendChild(adSec);
+
+  // Timed grid
+  const grid=document.createElement('div');grid.className='time-grid';
+  const totalH=(END_H-START_H)*HOUR_H;
+  // Time label column
+  const tcol=document.createElement('div');tcol.style.cssText=`position:relative;height:${totalH}px`;
+  for(let h=START_H;h<END_H;h++){
+    const lbl2=h===0?'':h<12?`${h} AM`:h===12?'12 PM':`${h-12} PM`;
+    const tl=document.createElement('div');tl.className='time-lbl';
+    tl.style.cssText=`position:absolute;top:${(h-START_H)*HOUR_H}px;width:52px`;
+    tl.innerHTML=`<span>${lbl2}</span>`;tcol.appendChild(tl);
+  }
+  grid.appendChild(tcol);
+  cfg.dates.forEach((ds,i)=>{
+    const dayEvs=(cfg.ev[i]||[]).filter(e=>enabled.has(e.calId));
+    grid.appendChild(buildTimedCol(grid,dayEvs,ds===TODAY,totalH));
+  });
+  wrap.appendChild(grid);
+  container.appendChild(wrap);
+}
+
+function expandEvents(evs){
+  const byDate={};
+  for(const [s,e,title,calId] of evs){
+    const[sy,sm,sd]=s.split('-').map(Number);
+    const[ey,em,ed]=e.split('-').map(Number);
+    let d=new Date(sy,sm-1,sd);
+    const fin=new Date(ey,em-1,ed);
+    while(d<=fin){
+      const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      (byDate[k]=byDate[k]||[]).push({title,calId});
+      d.setDate(d.getDate()+1);
+    }
+  }
+  return byDate;
+}
+
+const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DA=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+function buildMonthGrid(container,year,month,byDate,compact){
+  const maxE=compact?2:3;
+  const wrap=document.createElement('div');wrap.className='m-wrap';
+  const hdr=document.createElement('div');hdr.className='m-header';hdr.textContent=MN[month]+' '+year;wrap.appendChild(hdr);
+  const dn=document.createElement('div');dn.className='m-daynames';
+  DA.forEach((n,i)=>{const d=document.createElement('div');d.className='m-dn'+(i>=5?' m-dn-we':'');d.textContent=n;dn.appendChild(d);});
+  wrap.appendChild(dn);
+  const grid=document.createElement('div');grid.className='m-grid';
+  const fd=new Date(year,month,1).getDay();
+  const fm=(fd+6)%7;
+  const dim=new Date(year,month+1,0).getDate();
+  const pmd=new Date(year,month,0).getDate();
+  for(let i=fm-1;i>=0;i--){
+    const c=document.createElement('div');c.className='m-cell m-adj';
+    const n=document.createElement('div');n.className='m-num';n.textContent=pmd-i;c.appendChild(n);grid.appendChild(c);
+  }
+  for(let d=1;d<=dim;d++){
+    const ds=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const di=(fm+d-1)%7;
+    const c=document.createElement('div');
+    c.className='m-cell'+(di>=5?' m-we':'')+(ds===TODAY?' m-today':'');
+    const n=document.createElement('div');n.className='m-num'+(ds===TODAY?' m-num-today':'');n.textContent=d;c.appendChild(n);
+    const evs=byDate[ds]||[];
+    evs.slice(0,maxE).forEach(e=>{
+      const p=document.createElement('div');p.className='m-ev';
+      p.style.cssText=pillStyle(e.calId);p.textContent=e.title;p.title=e.title;c.appendChild(p);
+    });
+    if(evs.length>maxE){const m=document.createElement('div');m.className='m-more';m.textContent=`+${evs.length-maxE} more`;c.appendChild(m);}
+    grid.appendChild(c);
+  }
+  const tot=fm+dim,trail=(7-(tot%7))%7;
+  for(let i=1;i<=trail;i++){
+    const c=document.createElement('div');c.className='m-cell m-adj';
+    const n=document.createElement('div');n.className='m-num';n.textContent=i;c.appendChild(n);grid.appendChild(c);
+  }
+  wrap.appendChild(grid);container.appendChild(wrap);
+}
+
+// ─── SIDEBAR ───────────────────────────────────────────────────────
+function buildSidebar(){
+  const list=document.getElementById('cal-list');list.innerHTML='';
+  ['Personal','Work','Family','Other'].forEach(cat=>{
+    const ids=Object.keys(CALS).filter(id=>CALS[id].cat===cat);
+    if(!ids.length)return;
+    const ch=document.createElement('div');ch.className='cat-head';ch.textContent=cat;list.appendChild(ch);
+    ids.forEach(id=>{
+      const cal=CALS[id];
+      const item=document.createElement('label');item.className='cal-item'+(cal.on?'':' dim');item.htmlFor='chk-'+id;
+      const chk=document.createElement('input');chk.type='checkbox';chk.id='chk-'+id;chk.checked=cal.on;
+      chk.style.accentColor=cal.hex;
+      chk.addEventListener('change',e=>{
+        CALS[id].on=e.target.checked;
+        item.classList.toggle('dim',!e.target.checked);
+        const dot=item.querySelector('.cal-dot');if(dot)dot.style.background=CALS[id].on?cal.hex:'#ccc';
+        rerenderAll();
+      });
+      const dot=document.createElement('div');dot.className='cal-dot';dot.style.background=cal.on?cal.hex:'#ccc';
+      const nm=document.createElement('span');nm.className='cal-name';nm.textContent=cal.name;
+      item.appendChild(chk);item.appendChild(dot);item.appendChild(nm);list.appendChild(item);
+    });
+  });
+}
+
+// ─── RE-RENDER ─────────────────────────────────────────────────────
+function rerenderAll(){
+  const enabled=new Set(Object.keys(CALS).filter(id=>CALS[id].on));
+  const filtered=ALL_EVENTS.filter(([,,,calId])=>enabled.has(calId));
+  const byDate=expandEvents(filtered);
+  WEEK_CFGS.forEach(cfg=>buildWeekPanel(cfg,byDate,enabled));
+  const g3=document.getElementById('grid-3month');g3.innerHTML='';
+  [2,3,4].forEach(m=>buildMonthGrid(g3,2026,m,byDate,false));
+  const g6=document.getElementById('grid-6month');g6.innerHTML='';
+  [2,3,4,5,6,7].forEach(m=>buildMonthGrid(g6,2026,m,byDate,true));
+}
+
+// ─── INIT ──────────────────────────────────────────────────────────
+buildSidebar();
+rerenderAll();
+
+document.getElementById('btn-all').addEventListener('click',()=>{
+  Object.keys(CALS).forEach(id=>{CALS[id].on=true;});
+  buildSidebar();rerenderAll();
+});
+document.getElementById('btn-none').addEventListener('click',()=>{
+  Object.keys(CALS).forEach(id=>{CALS[id].on=false;});
+  buildSidebar();rerenderAll();
+});
+
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.view-pane').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.pane).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

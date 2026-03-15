@@ -61,7 +61,7 @@ export async function createSignedPlaybackUrl(
   const token = await mux.jwt.signPlaybackId(playbackId, {
     keyId: tokenId,
     keySecret: tokenSecret,
-    expiration: expiration,
+    expiration: `${expiration}`,
     type: "video",
   });
 
@@ -93,7 +93,7 @@ export async function createSignedThumbnailUrl(
   const token = await mux.jwt.signPlaybackId(playbackId, {
     keyId: tokenId,
     keySecret: tokenSecret,
-    expiration: expiration,
+    expiration: `${expiration}`,
     type: "thumbnail",
   });
 

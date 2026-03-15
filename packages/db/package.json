@@ -13,7 +13,8 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
-    "@prisma/client": "^5.22.0"
+    "@prisma/client": "^5.22.0",
+    "object-inspect": "^1.13.4"
   },
   "devDependencies": {
     "prisma": "^5.22.0",

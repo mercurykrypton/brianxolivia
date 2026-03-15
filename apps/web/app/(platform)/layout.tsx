@@ -82,7 +82,7 @@ export default function PlatformLayout({
                 <span>{item.label}</span>
                 {showBadge && (
                   <span className="ml-auto bg-pink-500 text-white text-xs rounded-full min-w-5 h-5 flex items-center justify-center px-1">
-                    {unread.count > 99 ? "99+" : unread.count}
+                    {(unread?.count ?? 0) > 99 ? "99+" : (unread?.count ?? 0)}
                   </span>
                 )}
               </Link>
