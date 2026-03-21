@@ -5,11 +5,11 @@
   "crons": [
     {
       "path": "/api/cron/travel-monitor",
-      "schedule": "0 9 * * *"
+      "schedule": "0 0 * * *"
     },
     {
       "path": "/api/cron/event-monitor",
-      "schedule": "0 10 * * *"
+      "schedule": "0 1 * * *"
     }
   ]
 }
