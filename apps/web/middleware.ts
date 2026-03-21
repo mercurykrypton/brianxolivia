@@ -21,6 +21,8 @@ async function getClerkMiddleware() {
       "/sign-up(.*)",
       "/c/(.*)",
       "/api/webhooks/(.*)",
+      "/api/cron/(.*)",
+      "/api/internal/(.*)",
       "/api/trpc/(.*)",
       "/_next(.*)",
       "/favicon.ico",
