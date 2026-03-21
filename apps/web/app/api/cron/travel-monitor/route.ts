@@ -6,7 +6,7 @@ import twilio from "twilio";
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
-const ALERT_PHONE = "778-888-8267";
+const ALERT_PHONE = "7789987015";
 const ALERT_EMAIL = "amerkur@gmail.com";
 const SAVINGS_THRESHOLD = 0.4; // 40% off
 

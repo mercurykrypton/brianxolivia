@@ -7,7 +7,7 @@ import crypto from "crypto";
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
-const ALERT_PHONE = "778-888-8267";
+const ALERT_PHONE = "7789987015";
 
 const searchQueries = [
   "comedy shows Vancouver BC upcoming tickets",
