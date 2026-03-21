@@ -3,6 +3,9 @@ import path from "path";
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname, "../../"),
+  outputFileTracingIncludes: {
+    "**": ["../../packages/db/node_modules/.prisma/client/**"],
+  },
   transpilePackages: ["@workspace/db", "@workspace/types", "@workspace/schemas"],
   images: {
     remotePatterns: [

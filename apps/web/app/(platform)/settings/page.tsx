@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
-import { User, CreditCard, Shield, Bell, Save, Loader2, Camera } from "lucide-react";
+import { User, CreditCard, Shield, Bell, Save, Loader2, Camera, Bot, LogOut } from "lucide-react";
 import { trpc } from "@/lib/trpc/provider";
 import { updateCreatorProfileSchema } from "@workspace/schemas";
 import type { UpdateCreatorProfileInput } from "@workspace/schemas";
@@ -12,19 +12,31 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/useToast";
+import { useClerk } from "@clerk/nextjs";
 
 const tabs = [
   { id: "profile", label: "Profile", icon: User },
   { id: "billing", label: "Billing", icon: CreditCard },
   { id: "security", label: "Security", icon: Shield },
+  { id: "agent", label: "AI Agent", icon: Bot },
 ];
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("profile");
+  const [agentEnabled, setAgentEnabled] = useState(false);
+  const [agentPrompt, setAgentPrompt] = useState("");
   const { toast } = useToast();
+  const { signOut } = useClerk();
   const utils = trpc.useUtils();
 
   const { data: me, isLoading } = trpc.auth.me.useQuery();
+
+  useEffect(() => {
+    if (me?.creatorProfile) {
+      setAgentEnabled((me.creatorProfile as any).isAgent ?? false);
+      setAgentPrompt((me.creatorProfile as any).agentSystemPrompt ?? "");
+    }
+  }, [me?.creatorProfile]);
   const updateProfile = trpc.creator.updateProfile.useMutation({
     onSuccess: () => {
       utils.auth.me.invalidate();
@@ -36,6 +48,16 @@ export default function SettingsPage() {
         description: err.message,
         variant: "destructive",
       });
+    },
+  });
+
+  const updateAgentConfig = trpc.creator.updateAgentConfig.useMutation({
+    onSuccess: () => {
+      utils.auth.me.invalidate();
+      toast({ title: "Agent settings saved" });
+    },
+    onError: (err) => {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
     },
   });
 
@@ -244,6 +266,105 @@ export default function SettingsPage() {
           </div>
         </motion.div>
       )}
+
+      {/* AI Agent tab */}
+      {activeTab === "agent" && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-6"
+        >
+          {me?.role === "CREATOR" ? (
+            <>
+              <div className="bg-card border border-border rounded-xl p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-purple-500/15 flex items-center justify-center">
+                    <Bot className="w-5 h-5 text-purple-400" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">AI Agent Mode</h3>
+                    <p className="text-muted-foreground text-sm">
+                      Let an AI reply to fan messages automatically
+                    </p>
+                  </div>
+                  {/* Toggle */}
+                  <button
+                    onClick={() => setAgentEnabled((v) => !v)}
+                    className={`ml-auto relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      agentEnabled ? "bg-purple-500" : "bg-secondary"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+                        agentEnabled ? "translate-x-6" : "translate-x-1"
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {agentEnabled && (
+                  <div className="space-y-3 pt-2 border-t border-border">
+                    <Label htmlFor="agentPrompt">
+                      System Prompt
+                      <span className="text-muted-foreground font-normal ml-1">
+                        — tell the AI who it is and how to respond
+                      </span>
+                    </Label>
+                    <textarea
+                      id="agentPrompt"
+                      value={agentPrompt}
+                      onChange={(e) => setAgentPrompt(e.target.value)}
+                      placeholder={`Example: You are ${me.creatorProfile?.displayName ?? "a creator"}'s AI assistant. Reply warmly to fan messages, answer questions about upcoming content, and let them know about subscription perks. Keep replies under 3 sentences.`}
+                      rows={6}
+                      maxLength={4000}
+                      className="w-full bg-input border border-border rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring transition-shadow"
+                    />
+                    <p className="text-xs text-muted-foreground text-right">
+                      {agentPrompt.length}/4000
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <Button
+                onClick={() =>
+                  updateAgentConfig.mutate({
+                    isAgent: agentEnabled,
+                    agentSystemPrompt: agentEnabled ? agentPrompt : undefined,
+                  })
+                }
+                disabled={updateAgentConfig.isPending}
+                className="w-full gradient-bg text-white hover:opacity-90"
+              >
+                {updateAgentConfig.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                ) : (
+                  <Save className="w-4 h-4 mr-2" />
+                )}
+                Save Agent Settings
+              </Button>
+            </>
+          ) : (
+            <div className="bg-card border border-border rounded-xl p-6 text-center">
+              <Bot className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+              <p className="text-muted-foreground text-sm">
+                AI Agent mode is only available to creators.
+              </p>
+            </div>
+          )}
+        </motion.div>
+      )}
+      {/* Sign out */}
+      <div className="mt-8 pt-6 border-t border-border">
+        <Button
+          onClick={() => signOut({ redirectUrl: "/" })}
+          variant="ghost"
+          className="w-full text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+        >
+          <LogOut className="w-4 h-4 mr-2" />
+          Sign Out
+        </Button>
+      </div>
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { UserButton, useUser } from "@clerk/nextjs";
+import { UserButton, useUser, useClerk } from "@clerk/nextjs";
 import { motion } from "framer-motion";
 import {
   Home,
@@ -14,6 +14,7 @@ import {
   LayoutDashboard,
   Plus,
   Search,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc/provider";
@@ -39,6 +40,7 @@ export default function PlatformLayout({
 }) {
   const pathname = usePathname();
   const { user } = useUser();
+  const { signOut } = useClerk();
   const { data: me } = trpc.auth.me.useQuery();
 
   const isCreator = me?.role === "CREATOR";
@@ -53,10 +55,10 @@ export default function PlatformLayout({
       <aside className="hidden md:flex flex-col w-64 border-r border-border h-screen sticky top-0 py-4 px-3 overflow-y-auto">
         {/* Logo */}
         <Link href="/feed" className="flex items-center gap-2 px-3 mb-8">
-          <div className="w-8 h-8 rounded-lg gradient-bg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">B</span>
+          <div className="px-2 h-8 rounded-lg gradient-bg flex items-center justify-center">
+            <span className="text-white font-bold text-xs tracking-tight">BxO</span>
           </div>
-          <span className="text-xl font-bold gradient-text">Brivia</span>
+          <span className="text-xl font-bold gradient-text">brianXolivia</span>
         </Link>
 
         {/* Main nav */}
@@ -118,10 +120,10 @@ export default function PlatformLayout({
           )}
         </nav>
 
-        {/* User profile */}
-        <div className="border-t border-border pt-3 px-1">
-          <div className="flex items-center gap-3">
-            <UserButton afterSignOutUrl="/" />
+        {/* User profile + sign out */}
+        <div className="border-t border-border pt-3 px-1 space-y-1">
+          <div className="flex items-center gap-3 px-2 py-1">
+            <UserButton />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">
                 {me?.creatorProfile?.displayName ??
@@ -134,6 +136,13 @@ export default function PlatformLayout({
               </p>
             </div>
           </div>
+          <button
+            onClick={() => signOut({ redirectUrl: "/" })}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-200"
+          >
+            <LogOut className="w-5 h-5 shrink-0" />
+            <span>Sign Out</span>
+          </button>
         </div>
       </aside>
 
@@ -143,9 +152,9 @@ export default function PlatformLayout({
       </main>
 
       {/* Mobile bottom navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 md:hidden z-50 glass-dark border-t border-white/10 px-2 pb-safe">
+      <nav className="fixed bottom-0 left-0 right-0 md:hidden z-50 glass-dark border-t border-white/10 px-1 pb-safe">
         <div className="flex items-center justify-around py-2">
-          {navItems.slice(0, 5).map((item) => {
+          {navItems.slice(0, 4).map((item) => {
             const isActive =
               pathname === item.href ||
               (item.href !== "/feed" && pathname.startsWith(item.href));
@@ -169,6 +178,23 @@ export default function PlatformLayout({
               </Link>
             );
           })}
+          <Link
+            href="/settings"
+            className={cn(
+              "flex flex-col items-center gap-1 p-2 rounded-xl transition-colors",
+              pathname.startsWith("/settings") ? "text-pink-500" : "text-muted-foreground"
+            )}
+          >
+            <Settings className="w-5 h-5" />
+            <span className="text-xs">Settings</span>
+          </Link>
+          <button
+            onClick={() => signOut({ redirectUrl: "/" })}
+            className="flex flex-col items-center gap-1 p-2 rounded-xl text-muted-foreground transition-colors"
+          >
+            <LogOut className="w-5 h-5" />
+            <span className="text-xs">Sign Out</span>
+          </button>
         </div>
       </nav>
     </div>

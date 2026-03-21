@@ -12,23 +12,23 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "Brivia – Premium Creator Platform",
-    template: "%s | Brivia",
+    default: "brianXolivia – Exclusive Couples Content",
+    template: "%s | brianXolivia",
   },
   description:
-    "Brivia is the premium platform for creators to monetize their content and connect with fans.",
+    "Exclusive digital content from Brian & Olivia, available by subscription.",
   keywords: ["creator", "content", "subscription", "exclusive"],
   openGraph: {
-    title: "Brivia – Premium Creator Platform",
+    title: "brianXolivia – Exclusive Couples Content",
     description: "Connect with your favorite creators. Exclusive content, direct messaging.",
     type: "website",
     locale: "en_US",
-    url: process.env.NEXT_PUBLIC_APP_URL ?? "https://brivia.com",
-    siteName: "Brivia",
+    url: process.env.NEXT_PUBLIC_APP_URL ?? "https://brianxolivia.com",
+    siteName: "brianXolivia",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Brivia – Premium Creator Platform",
+    title: "brianXolivia – Exclusive Couples Content",
     description: "Connect with your favorite creators.",
   },
   robots: {

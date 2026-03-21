@@ -183,7 +183,7 @@ export async function createOrUpdateStripeTier(params: {
     const product = await stripe.products.create(
       {
         name: params.name,
-        metadata: { createdBy: "brivia" },
+        metadata: { createdBy: "brianxolivia" },
       },
       { stripeAccount: params.creatorStripeAccountId }
     );

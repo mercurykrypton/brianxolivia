@@ -4,6 +4,7 @@ import {
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
+  adminProcedure,
 } from "../trpc";
 import {
   onboardingCreatorSchema,
@@ -123,6 +124,52 @@ export const authRouter = createTRPCRouter({
         select: { id: true },
       });
       return { available: !existing };
+    }),
+
+  // Admin: promote any user to creator by email
+  promoteToCreator: adminProcedure
+    .input(
+      z.object({
+        email: z.string().email(),
+        displayName: z.string().min(2).max(50),
+        slug: z.string().min(3).max(30).regex(/^[a-z0-9-]+$/),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const user = await ctx.prisma.user.findUnique({
+        where: { email: input.email },
+      });
+
+      if (!user) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+      }
+
+      const slugTaken = await ctx.prisma.creatorProfile.findFirst({
+        where: { slug: input.slug, userId: { not: user.id } },
+      });
+
+      if (slugTaken) {
+        throw new TRPCError({ code: "CONFLICT", message: "Slug already taken" });
+      }
+
+      await ctx.prisma.user.update({
+        where: { id: user.id },
+        data: { role: "CREATOR" },
+      });
+
+      await ctx.prisma.creatorProfile.upsert({
+        where: { userId: user.id },
+        create: { userId: user.id, displayName: input.displayName, slug: input.slug, tags: [] },
+        update: { displayName: input.displayName, slug: input.slug },
+      });
+
+      await ctx.prisma.fanProfile.upsert({
+        where: { userId: user.id },
+        create: { userId: user.id, displayName: input.displayName },
+        update: {},
+      });
+
+      return { success: true };
     }),
 
   // Switch role (FAN -> apply to become CREATOR)

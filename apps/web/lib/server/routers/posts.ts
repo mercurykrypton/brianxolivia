@@ -711,7 +711,7 @@ export const postsRouter = createTRPCRouter({
         customerId,
         paymentMethodId: input.paymentMethodId,
         creatorStripeAccountId: post.creatorProfile.stripeAccountId,
-        description: `Brivia: PPV post "${post.title ?? "Unlocked post"}"`,
+        description: `brianXolivia: PPV post "${post.title ?? "Unlocked post"}"`,
         metadata: {
           postId: post.id,
           buyerId: ctx.user.id,

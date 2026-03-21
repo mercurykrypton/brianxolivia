@@ -7,7 +7,7 @@ if (!process.env.RESEND_API_KEY) {
 export const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const EMAIL_FROM =
-  process.env.EMAIL_FROM ?? "Brivia <noreply@brivia.com>";
+  process.env.EMAIL_FROM ?? "brianXolivia <noreply@brianxolivia.com>";
 export const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
 // Email types
@@ -34,7 +34,7 @@ export async function sendWelcomeEmail(params: {
   await resend.emails.send({
     from: EMAIL_FROM,
     to: params.to,
-    subject: `Welcome to Brivia, ${params.displayName}! 🎉`,
+    subject: `Welcome to brianXolivia, ${params.displayName}! 🎉`,
     react: createElement(WelcomeEmail, {
       displayName: params.displayName,
       role: params.role,
@@ -61,7 +61,7 @@ export async function sendNewSubscriberEmail(params: {
         <p>Hi ${params.creatorName},</p>
         <p><strong>${params.subscriberName}</strong> just subscribed to your <strong>${params.tierName}</strong> tier for <strong>$${params.amount}/month</strong>.</p>
         <a href="${APP_URL}/dashboard" style="background: linear-gradient(135deg, #FF1493, #9B59B6); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; display: inline-block; margin-top: 16px;">View Dashboard</a>
-        <p style="color: #666; margin-top: 24px; font-size: 12px;">Brivia - Creator Subscription Platform</p>
+        <p style="color: #666; margin-top: 24px; font-size: 12px;">brianXolivia</p>
       </div>
     `,
   });
@@ -86,7 +86,7 @@ export async function sendNewTipEmail(params: {
         <p><strong>${params.senderName}</strong> sent you a <strong>$${params.amount}</strong> tip!</p>
         ${params.message ? `<blockquote style="border-left: 4px solid #FF1493; padding-left: 16px; color: #444;">"${params.message}"</blockquote>` : ""}
         <a href="${APP_URL}/earnings" style="background: linear-gradient(135deg, #FF1493, #9B59B6); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; display: inline-block; margin-top: 16px;">View Earnings</a>
-        <p style="color: #666; margin-top: 24px; font-size: 12px;">Brivia - Creator Subscription Platform</p>
+        <p style="color: #666; margin-top: 24px; font-size: 12px;">brianXolivia</p>
       </div>
     `,
   });
@@ -110,7 +110,7 @@ export async function sendPayoutEmail(params: {
         <p>Your payout of <strong>$${params.amount}</strong> has been sent!</p>
         <p>Estimated arrival: <strong>${params.estimatedArrival}</strong></p>
         <a href="${APP_URL}/earnings" style="background: linear-gradient(135deg, #FF1493, #9B59B6); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; display: inline-block; margin-top: 16px;">View Earnings</a>
-        <p style="color: #666; margin-top: 24px; font-size: 12px;">Brivia - Creator Subscription Platform</p>
+        <p style="color: #666; margin-top: 24px; font-size: 12px;">brianXolivia</p>
       </div>
     `,
   });
@@ -134,7 +134,7 @@ export async function sendSubscriptionCanceledEmail(params: {
         <p>Your subscription to <strong>${params.creatorName}</strong> has been canceled.</p>
         <p>You'll continue to have access until <strong>${params.endDate}</strong>.</p>
         <a href="${APP_URL}/explore" style="background: linear-gradient(135deg, #FF1493, #9B59B6); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; display: inline-block; margin-top: 16px;">Explore Creators</a>
-        <p style="color: #666; margin-top: 24px; font-size: 12px;">Brivia - Creator Subscription Platform</p>
+        <p style="color: #666; margin-top: 24px; font-size: 12px;">brianXolivia</p>
       </div>
     `,
   });

@@ -12,6 +12,7 @@ import {
   FileText,
   Heart,
   DollarSign,
+  Bot,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc/provider";
 import { PostCard } from "@/components/feed/PostCard";
@@ -120,6 +121,12 @@ export default function CreatorProfilePage({ params }: Props) {
                   {creator.displayName}
                   {creator.isVerified && (
                     <Verified className="w-5 h-5 text-pink-500" fill="currentColor" />
+                  )}
+                  {creator.isAgent && (
+                    <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-400 border border-purple-500/30">
+                      <Bot className="w-3 h-3" />
+                      AI
+                    </span>
                   )}
                 </h1>
                 <p className="text-muted-foreground">@{creator.slug}</p>

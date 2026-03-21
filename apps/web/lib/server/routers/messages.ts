@@ -7,6 +7,7 @@ import {
 import { sendMessageSchema, paginationSchema } from "@workspace/schemas";
 import { getPublicUrl, createPresignedDownloadUrl } from "../../r2";
 import { publishMessage, publishReadReceipt, publishNotification } from "../../ably";
+import { generateAgentReply } from "../services/agent";
 
 export const messagesRouter = createTRPCRouter({
   // Get all conversations for current user
@@ -309,6 +310,8 @@ export const messagesRouter = createTRPCRouter({
               id: true,
               displayName: true,
               stripeAccountId: true,
+              isAgent: true,
+              agentSystemPrompt: true,
             },
           },
           fan: { select: { id: true, fanProfile: { select: { displayName: true } } } },
@@ -390,6 +393,17 @@ export const messagesRouter = createTRPCRouter({
         data: notification.data,
       }).catch(console.error);
 
+      // If creator is an AI agent and a fan sent the message, generate a reply
+      if (isFan && conversation.creatorProfile.isAgent && conversation.creatorProfile.agentSystemPrompt) {
+        generateAgentReply({
+          conversationId: input.conversationId,
+          creatorUserId: conversation.creatorProfile.userId,
+          creatorProfileId: conversation.creatorProfile.id,
+          systemPrompt: conversation.creatorProfile.agentSystemPrompt,
+          fanUserId: ctx.user.id,
+        }).catch(console.error);
+      }
+
       return message;
     }),
 
@@ -446,7 +460,7 @@ export const messagesRouter = createTRPCRouter({
         paymentMethodId: input.paymentMethodId,
         creatorStripeAccountId:
           message.conversation.creatorProfile.stripeAccountId,
-        description: "Brivia: PPV message unlock",
+        description: "brianXolivia: PPV message unlock",
         metadata: {
           messageId: message.id,
           buyerId: ctx.user.id,
@@ -541,7 +555,7 @@ export const messagesRouter = createTRPCRouter({
         customerId,
         paymentMethodId: input.paymentMethodId,
         creatorStripeAccountId: conversation.creatorProfile.stripeAccountId,
-        description: "Brivia: DM unlock",
+        description: "brianXolivia: DM unlock",
         confirm: true,
       });
 

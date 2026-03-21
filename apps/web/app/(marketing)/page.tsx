@@ -3,16 +3,14 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-  Zap,
-  Shield,
-  DollarSign,
+  Lock,
+  ImageIcon,
+  Video,
   MessageCircle,
-  Play,
-  Star,
+  Heart,
   ArrowRight,
   Check,
-  Users,
-  TrendingUp,
+  Star,
 } from "lucide-react";
 
 const fadeUp = {
@@ -25,89 +23,80 @@ const staggerContainer = {
   animate: { transition: { staggerChildren: 0.1 } },
 };
 
-const stats = [
-  { value: "50K+", label: "Active Creators" },
-  { value: "$2M+", label: "Paid to Creators" },
-  { value: "500K+", label: "Subscribers" },
-  { value: "80%", label: "Creator Earnings" },
-];
-
 const features = [
   {
-    icon: DollarSign,
-    title: "Keep 80% of Revenue",
+    icon: ImageIcon,
+    title: "Exclusive Photos",
     description:
-      "One of the highest creator payouts in the industry. We only take 20%.",
+      "Behind-the-scenes and exclusive photo sets you won't find anywhere else.",
     gradient: "from-pink-500 to-pink-700",
   },
   {
-    icon: MessageCircle,
-    title: "Real-time Messaging",
+    icon: Video,
+    title: "Premium Videos",
     description:
-      "Direct messaging with fans via Ably-powered real-time chat. Earn from PPV messages.",
+      "Full-length videos, vlogs, and intimate moments — all in high quality.",
     gradient: "from-purple-500 to-purple-700",
   },
   {
-    icon: Shield,
-    title: "Secure & Private",
+    icon: MessageCircle,
+    title: "Direct Messages",
     description:
-      "Content protected with Cloudflare R2 signed URLs. Your real identity stays private.",
+      "Send us a message directly. We read and reply to every subscriber.",
     gradient: "from-pink-600 to-purple-600",
   },
   {
-    icon: Play,
-    title: "Premium Video Streaming",
+    icon: Lock,
+    title: "Paywalled Content",
     description:
-      "Mux-powered video with adaptive streaming, signed URLs for paywalled content.",
+      "All content is exclusively for subscribers. Safe, private, and secure.",
     gradient: "from-purple-600 to-pink-500",
   },
   {
-    icon: Zap,
-    title: "Multiple Revenue Streams",
+    icon: Heart,
+    title: "Couples Content",
     description:
-      "Subscriptions, tips, pay-per-view posts, DMs, and custom content requests.",
+      "Authentic, real content from us as a couple — unfiltered and personal.",
     gradient: "from-pink-500 to-purple-500",
   },
   {
-    icon: TrendingUp,
-    title: "Creator Analytics",
+    icon: Star,
+    title: "Regular Updates",
     description:
-      "Deep insights into your earnings, subscriber growth, and content performance.",
+      "New content posted regularly. Subscribe and never miss an upload.",
     gradient: "from-purple-500 to-pink-600",
   },
 ];
 
-const pricing = [
+const plans = [
   {
-    name: "Fan",
-    price: "Free",
-    description: "Browse and discover creators",
+    name: "Monthly",
+    price: "$9.99",
+    period: "/ month",
+    description: "Full access to all content",
     features: [
-      "Browse public content",
-      "Subscribe to creators",
-      "Send tips",
-      "Direct messaging (with DM tiers)",
+      "Unlimited photo & video access",
+      "New content every week",
+      "Direct messaging",
+      "Early access to new posts",
     ],
-    cta: "Sign Up Free",
+    cta: "Subscribe Now",
     href: "/sign-up",
     highlighted: false,
   },
   {
-    name: "Creator",
-    price: "Free to start",
-    description: "Platform takes 20% of earnings",
+    name: "Annual",
+    price: "$79.99",
+    period: "/ year",
+    description: "Save 33% vs monthly",
     features: [
-      "Unlimited posts & videos",
-      "Custom subscription tiers",
-      "Real-time DMs",
-      "PPV content & messages",
-      "Custom content requests",
-      "Analytics dashboard",
-      "Stripe Connect payouts",
-      "Verification badge",
+      "Everything in Monthly",
+      "Priority DM responses",
+      "Exclusive annual-only content",
+      "Lock in your rate forever",
     ],
-    cta: "Start Creating",
-    href: "/sign-up?role=creator",
+    cta: "Best Value",
+    href: "/sign-up",
     highlighted: true,
   },
 ];
@@ -133,28 +122,29 @@ export default function LandingPage() {
             variants={fadeUp}
             className="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5 text-sm text-muted-foreground mb-6"
           >
-            <Star className="w-3.5 h-3.5 text-pink-500" fill="currentColor" />
-            <span>The premium creator subscription platform</span>
+            <Heart className="w-3.5 h-3.5 text-pink-500" fill="currentColor" />
+            <span>Exclusive couples content — subscribe for full access</span>
           </motion.div>
 
           <motion.h1
             variants={fadeUp}
             className="text-5xl md:text-7xl font-bold mb-6 leading-tight tracking-tight"
           >
-            Own Your{" "}
-            <span className="gradient-text">Content.</span>
+            Welcome to{" "}
+            <span className="gradient-text">Brian & Olivia&apos;s</span>
             <br />
-            Build Your{" "}
-            <span className="gradient-text">Empire.</span>
+            Digital Content
           </motion.h1>
 
           <motion.p
             variants={fadeUp}
             className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed"
           >
-            Brivia gives creators the tools to monetize their passion with
-            subscriptions, tips, PPV content, and direct fan connections.{" "}
-            <strong className="text-foreground">Keep 80% of everything you earn.</strong>
+            We&apos;re a couple sharing our world exclusively with our
+            subscribers — photos, videos, and real moments together.{" "}
+            <strong className="text-foreground">
+              Subscribe for full access.
+            </strong>
           </motion.p>
 
           <motion.div
@@ -165,35 +155,20 @@ export default function LandingPage() {
               href="/sign-up"
               className="gradient-bg text-white px-8 py-3.5 rounded-xl font-semibold text-base hover:opacity-90 transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-pink-500/25"
             >
-              Start Creating
+              Subscribe Now
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
-              href="/explore"
+              href="/sign-in"
               className="bg-white/5 border border-white/10 text-foreground px-8 py-3.5 rounded-xl font-semibold text-base hover:bg-white/10 transition-all duration-200 flex items-center justify-center gap-2"
             >
-              Explore Creators
+              Already a member? Sign In
             </Link>
-          </motion.div>
-
-          {/* Stats */}
-          <motion.div
-            variants={fadeUp}
-            className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 pt-16 border-t border-white/10"
-          >
-            {stats.map((stat) => (
-              <div key={stat.label} className="text-center">
-                <div className="text-3xl font-bold gradient-text mb-1">
-                  {stat.value}
-                </div>
-                <div className="text-sm text-muted-foreground">{stat.label}</div>
-              </div>
-            ))}
           </motion.div>
         </motion.div>
       </section>
 
-      {/* Features */}
+      {/* What you get */}
       <section id="features" className="py-24 px-4">
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -203,11 +178,12 @@ export default function LandingPage() {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
-              Everything You Need to{" "}
-              <span className="gradient-text">Succeed</span>
+              What You Get as a{" "}
+              <span className="gradient-text">Subscriber</span>
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Professional tools built for creators who take their work seriously.
+              All content is behind a paywall — subscribe once and get
+              everything.
             </p>
           </motion.div>
 
@@ -249,8 +225,8 @@ export default function LandingPage() {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
-              Start Earning in{" "}
-              <span className="gradient-text">3 Steps</span>
+              Get Started in{" "}
+              <span className="gradient-text">3 Easy Steps</span>
             </h2>
           </motion.div>
 
@@ -258,18 +234,18 @@ export default function LandingPage() {
             {[
               {
                 step: "01",
-                title: "Create Your Profile",
-                desc: "Set up your pseudonym, bio, and subscription tiers. Your real identity stays private.",
+                title: "Create an Account",
+                desc: "Sign up in seconds. No personal information required beyond an email.",
               },
               {
                 step: "02",
-                title: "Post & Monetize",
-                desc: "Upload photos, videos, and text. Set custom prices for PPV content or require a subscription tier.",
+                title: "Choose a Plan",
+                desc: "Pick monthly or annual access. Cancel any time — no questions asked.",
               },
               {
                 step: "03",
-                title: "Get Paid",
-                desc: "Earnings go directly to your Stripe Connect account. Weekly payouts, no minimum.",
+                title: "Enjoy Everything",
+                desc: "Instant access to all photos, videos, and the ability to message us directly.",
               },
             ].map((item, i) => (
               <motion.div
@@ -293,7 +269,7 @@ export default function LandingPage() {
 
       {/* Pricing */}
       <section id="pricing" className="py-24 px-4">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           <motion.div
             className="text-center mb-16"
             initial={{ opacity: 0, y: 20 }}
@@ -301,15 +277,16 @@ export default function LandingPage() {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
-              Simple, <span className="gradient-text">Transparent</span> Pricing
+              Simple,{" "}
+              <span className="gradient-text">Affordable</span> Access
             </h2>
             <p className="text-muted-foreground text-lg">
-              No monthly fees. We only earn when you earn.
+              One subscription unlocks everything. Cancel any time.
             </p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {pricing.map((plan, i) => (
+            {plans.map((plan, i) => (
               <motion.div
                 key={plan.name}
                 className={`rounded-2xl p-8 ${
@@ -325,16 +302,21 @@ export default function LandingPage() {
                 {plan.highlighted && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                     <span className="gradient-bg text-white text-xs px-3 py-1 rounded-full font-medium">
-                      MOST POPULAR
+                      BEST VALUE
                     </span>
                   </div>
                 )}
                 <div className="mb-6">
                   <h3 className="text-xl font-bold mb-1">{plan.name}</h3>
-                  <div className="text-3xl font-bold gradient-text mb-1">
-                    {plan.price}
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-bold gradient-text">
+                      {plan.price}
+                    </span>
+                    <span className="text-muted-foreground text-sm">
+                      {plan.period}
+                    </span>
                   </div>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-muted-foreground text-sm mt-1">
                     {plan.description}
                   </p>
                 </div>
@@ -373,21 +355,27 @@ export default function LandingPage() {
           viewport={{ once: true }}
         >
           <div className="gradient-border rounded-3xl p-12 bg-card">
+            <Heart
+              className="w-10 h-10 text-pink-500 mx-auto mb-4"
+              fill="currentColor"
+            />
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
-              Ready to <span className="gradient-text">Build Your Empire?</span>
+              Join Our{" "}
+              <span className="gradient-text">Community</span>
             </h2>
             <p className="text-muted-foreground text-lg mb-8">
-              Join thousands of creators who are monetizing their content with Brivia.
+              Exclusive content, real moments, and direct access to us.
+              Subscribe today and become part of our inner circle.
             </p>
             <Link
               href="/sign-up"
               className="inline-flex items-center gap-2 gradient-bg text-white px-10 py-4 rounded-xl font-semibold text-lg hover:opacity-90 transition-opacity shadow-lg shadow-pink-500/25"
             >
-              Start for Free
+              Subscribe Now
               <ArrowRight className="w-5 h-5" />
             </Link>
             <p className="text-muted-foreground text-sm mt-4">
-              No monthly fees. Keep 80% of your earnings.
+              Cancel any time. Instant access after sign-up.
             </p>
           </div>
         </motion.div>

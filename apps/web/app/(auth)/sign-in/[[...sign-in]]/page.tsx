@@ -1,6 +1,6 @@
-import { SignUp } from "@clerk/nextjs";
+import { SignIn } from "@clerk/nextjs";
 
-export default function SignUpPage() {
+export default function SignInPage() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
       {/* Background orbs */}
@@ -12,17 +12,17 @@ export default function SignUpPage() {
       <div className="relative z-10 w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-4">
-            <div className="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">B</span>
+            <div className="px-2.5 h-10 rounded-xl gradient-bg flex items-center justify-center">
+              <span className="text-white font-bold text-sm tracking-tight">BxO</span>
             </div>
-            <span className="text-2xl font-bold gradient-text">Brivia</span>
+            <span className="text-2xl font-bold gradient-text">brianXolivia</span>
           </div>
-          <h1 className="text-2xl font-bold">Create your account</h1>
+          <h1 className="text-2xl font-bold">Welcome back</h1>
           <p className="text-muted-foreground text-sm mt-1">
-            Join Brivia to connect with creators
+            Sign in to continue to brianXolivia
           </p>
         </div>
-        <SignUp />
+        <SignIn />
       </div>
     </div>
   );

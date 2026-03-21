@@ -50,22 +50,19 @@ export default function MarketingLayout({
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg gradient-bg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">B</span>
+              <div className="px-2 h-8 rounded-lg gradient-bg flex items-center justify-center">
+                <span className="text-white font-bold text-xs tracking-tight">BxO</span>
               </div>
-              <span className="text-xl font-bold gradient-text">Brivia</span>
+              <span className="text-xl font-bold gradient-text">brianXolivia</span>
             </Link>
 
             {/* Nav links */}
             <div className="hidden md:flex items-center gap-6">
-              <Link href="/explore" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
-                Explore
-              </Link>
               <Link href="#features" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
-                Features
+                Content
               </Link>
               <Link href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
-                For Creators
+                Pricing
               </Link>
             </div>
 
@@ -85,26 +82,26 @@ export default function MarketingLayout({
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-7 h-7 rounded-lg gradient-bg flex items-center justify-center">
-                  <span className="text-white font-bold text-xs">B</span>
+                <div className="px-1.5 h-7 rounded-lg gradient-bg flex items-center justify-center">
+                  <span className="text-white font-bold text-xs tracking-tight">BxO</span>
                 </div>
-                <span className="font-bold gradient-text">Brivia</span>
+                <span className="font-bold gradient-text">brianXolivia</span>
               </div>
               <p className="text-muted-foreground text-sm">
-                The premium creator platform for exclusive content.
+                Exclusive digital content from Brian &amp; Olivia.
               </p>
             </div>
             <div>
-              <h4 className="font-semibold mb-3 text-sm">Platform</h4>
+              <h4 className="font-semibold mb-3 text-sm">Subscribe</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
-                  <Link href="/explore" className="hover:text-foreground transition-colors">
-                    Explore
+                  <Link href="/sign-up" className="hover:text-foreground transition-colors">
+                    Create Account
                   </Link>
                 </li>
                 <li>
-                  <Link href="/sign-up" className="hover:text-foreground transition-colors">
-                    Become a Creator
+                  <Link href="/sign-in" className="hover:text-foreground transition-colors">
+                    Sign In
                   </Link>
                 </li>
               </ul>
@@ -142,10 +139,10 @@ export default function MarketingLayout({
           </div>
           <div className="border-t border-border pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-muted-foreground text-xs">
-              © {new Date().getFullYear()} Brivia. All rights reserved. 18+ only.
+              © {new Date().getFullYear()} brianXolivia. All rights reserved. 18+ only.
             </p>
             <p className="text-muted-foreground text-xs">
-              All creators have been verified and are 18+.
+              All content creators are verified adults 18+.
             </p>
           </div>
         </div>

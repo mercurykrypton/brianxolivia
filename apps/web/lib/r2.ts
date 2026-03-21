@@ -1,7 +1,7 @@
 import { AwsClient } from "aws4fetch";
 
 const R2_ENDPOINT = `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`;
-const R2_BUCKET = process.env.R2_BUCKET_NAME ?? "brivia-media";
+const R2_BUCKET = process.env.R2_BUCKET_NAME ?? "brianxolivia-media";
 const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL ?? "";
 
 function getR2Client(): AwsClient {

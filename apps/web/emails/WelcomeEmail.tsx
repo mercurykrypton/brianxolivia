@@ -52,7 +52,7 @@ export function WelcomeEmail({ displayName, role, appUrl }: WelcomeEmailProps) {
               WebkitTextFillColor: "transparent",
             }}
           >
-            Brivia
+            brianXolivia
           </span>
         </div>
       </div>
@@ -75,7 +75,7 @@ export function WelcomeEmail({ displayName, role, appUrl }: WelcomeEmailProps) {
             marginTop: 0,
           }}
         >
-          Welcome to Brivia, {displayName}! 🎉
+          Welcome to brianXolivia, {displayName}! 🎉
         </h1>
 
         <p
@@ -118,7 +118,7 @@ export function WelcomeEmail({ displayName, role, appUrl }: WelcomeEmailProps) {
                 color: "#fafafa",
               }}
             >
-              Explore Brivia:
+              Explore brianXolivia:
             </p>
             <ul style={{ color: "#888888", paddingLeft: "16px", lineHeight: "2" }}>
               <li>Discover creators in the Explore section</li>
@@ -154,7 +154,7 @@ export function WelcomeEmail({ displayName, role, appUrl }: WelcomeEmailProps) {
           textAlign: "center",
         }}
       >
-        Brivia · The premium creator subscription platform
+        brianXolivia · Exclusive couples content
         <br />
         18+ only · All creators are verified
       </p>

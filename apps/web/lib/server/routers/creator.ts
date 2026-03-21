@@ -418,6 +418,25 @@ export const creatorRouter = createTRPCRouter({
       };
     }),
 
+  // Update AI agent configuration
+  updateAgentConfig: creatorProcedure
+    .input(
+      z.object({
+        isAgent: z.boolean(),
+        agentSystemPrompt: z.string().max(4000).optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.creatorProfile.update({
+        where: { id: ctx.creatorProfile.id },
+        data: {
+          isAgent: input.isAgent,
+          agentSystemPrompt: input.agentSystemPrompt ?? null,
+        },
+      });
+      return { success: true };
+    }),
+
   // Get popular tags for explore
   getPopularTags: publicProcedure.query(async ({ ctx }) => {
     const creators = await ctx.prisma.creatorProfile.findMany({

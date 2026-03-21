@@ -1,0 +1,10 @@
+node_modules
+.next
+.turbo
+apps/web/.next
+packages/*/node_modules
+ML/
+fastbook/
+Launch VPN & RDP.app/
+.claude/
+*.log

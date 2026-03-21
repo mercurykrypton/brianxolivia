@@ -53,7 +53,7 @@ export const tipsRouter = createTRPCRouter({
       customerId,
       paymentMethodId: input.paymentMethodId,
       creatorStripeAccountId: creator.stripeAccountId,
-      description: `Brivia tip to ${creator.displayName}`,
+      description: `brianXolivia tip to ${creator.displayName}`,
       metadata: {
         tipSenderId: ctx.user.id,
         creatorProfileId: creator.id,

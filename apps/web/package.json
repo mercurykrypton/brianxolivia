@@ -11,6 +11,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.80.0",
     "@clerk/nextjs": "^6.9.13",
     "@hookform/resolvers": "^3.10.0",
     "@mux/mux-node": "^9.0.1",
@@ -64,6 +65,7 @@
     "svix": "^1.45.1",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
+    "twilio": "^5.13.0",
     "zod": "^3.24.1",
     "zustand": "^5.0.3"
   },

@@ -44,7 +44,7 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Brivia brand colors
+        // brianXolivia brand colors
         pink: {
           DEFAULT: "#FF1493",
           50: "#fff0f8",
